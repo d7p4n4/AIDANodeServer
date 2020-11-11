@@ -1,0 +1,97 @@
+openapi: 3.0.1
+info:
+  title: AIDA webshop
+  version: 1.0.0
+servers:
+- url: http://localhost:8080
+paths:
+  /order:
+    post:
+      description: Új megrendelés
+      operationId: orderPOST
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/request'
+        required: true
+      responses:
+        "200":
+          description: Rendelés rögzítve!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/success'
+        "300":
+          description: Sikertelen kísérlet!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unsuccess'
+        "500":
+          description: Hiba történt!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/failed'
+      x-swagger-router-controller: Default
+components:
+  schemas:
+    request:
+      properties:
+        partner_id:
+          type: string
+          description: Partner SAP kódja
+          example: C002
+        date:
+          type: string
+          description: Rendelés dátuma
+          format: date
+          example: 2020-11-10
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/request_lines'
+    success:
+      properties:
+        identifier:
+          type: integer
+          description: a létrehozott rendelés azonosítója
+          example: 42
+      example:
+        identifier: 42
+    failed:
+      properties:
+        details:
+          type: string
+          description: hiba részletes leírása
+          example: "RunTime Error in java code :- Exception in thread “main” java.lang.StackOverflowError\r\
+            \ at java.io.PrintStream.write(PrintStream.java:526)\nat java.io.PrintStream.print(PrintStream.java:597)\n\
+            at java.io.PrintStream.println(PrintStream.java:736)\nat StackOverflowErrorClass.printNumber(StackOverflowErrorClass.java:13)\n\
+            at StackOverflowErrorClass.printNumber(StackOverflowErrorClass.java:14)\n\
+            at StackOverflowErrorClass.printNumber(StackOverflowErrorClass.java:14)"
+    unsuccess:
+      properties:
+        details:
+          type: string
+          description: sikertelenség oka
+          example: bemenő adat nem megfelelő
+    request_detail:
+      properties:
+        product_id:
+          type: integer
+          description: termék SAP kódja
+          example: 1
+        quantity:
+          type: integer
+          description: rendelt mennyiség
+          example: 10
+        price:
+          type: number
+          description: egységár
+          format: double
+          example: 15
+    request_lines:
+      properties:
+        detail:
+          $ref: '#/components/schemas/request_detail'
